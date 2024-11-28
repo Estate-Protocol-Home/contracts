@@ -40,5 +40,5 @@ interface IEstateProtocolWhitelistSTO {
   event OperatorRoleGranted(address indexed account);
   event OperatorRoleRevoked(address indexed account);
 
-
+  event MerkleRootUpdated(bytes32 merkleRoot);
 }

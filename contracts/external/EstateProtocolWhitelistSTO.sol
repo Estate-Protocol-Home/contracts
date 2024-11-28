@@ -1,9 +1,11 @@
 pragma solidity 0.5.8;
 
 import "./IEstateProtocolWhitelistSTO.sol";
+import "@openzeppelin/contracts/cryptography/MerkleProof.sol";
 
 contract EstateProtocolWhitelistSTO is IEstateProtocolWhitelistSTO {
   address public admin;
+  bytes32 public merkleRoot;
 
   uint64 public constant MAX_LOCK_PERIOD = 365 days;
 
@@ -31,6 +33,28 @@ contract EstateProtocolWhitelistSTO is IEstateProtocolWhitelistSTO {
     require(isOperator[msg.sender], "Not a operator");
     _;
   }
+
+  /**
+     * @notice Updates the Merkle root for whitelist verification.
+     * @param _merkleRoot The new Merkle root.
+     */
+    function updateMerkleRoot(bytes32 _merkleRoot) external onlyAdmin {
+        merkleRoot = _merkleRoot;
+        emit MerkleRootUpdated(_merkleRoot);
+    }
+
+     /**
+     * @notice Verifies an investor's data against the Merkle root.
+     * @param proof The Merkle proof.
+     * @param leafData The leaf node data (address, expiryTime, isAccredited) hashed off-chain.
+     * @return True if the proof is valid, false otherwise.
+     */
+    function verifyInvestor(
+        bytes32[] calldata proof,
+        bytes32 leafData
+    ) external view returns (bool) {
+        return MerkleProof.verify(proof, merkleRoot, leafData);
+    }
 
   /**
     * @notice Add or remove KYC info of an investor.
