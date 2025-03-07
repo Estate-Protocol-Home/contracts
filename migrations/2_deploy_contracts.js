@@ -40,6 +40,7 @@ const VolumeRestrictionLib = artifacts.require('./VolumeRestrictionLib.sol');
 const VestingEscrowWalletFactory = artifacts.require('./VestingEscrowWalletFactory.sol')
 const VestingEscrowWalletLogic = artifacts.require('./VestingEscrowWallet.sol');
 const EstateProtocolWhitelistSTO = artifacts.require('./EstateProtocolWhitelistSTO.sol');
+const FakeStablecoin = artifacts.require('./FakeStablecoin.sol');
 
 const Web3 = require("web3");
 let BN = Web3.utils.BN;
@@ -610,6 +611,10 @@ module.exports = function(deployer, network, accounts) {
             return deployer.deploy(USDTieredSTOFactory, usdTieredSTOSetupCost, USDTieredSTOLogic.address, polymathRegistry.address, { from: PolymathAccount });
         })
         .then(() => {
+            // H) Deploy the USDTieredSTOFactory (Use to generate the USDTieredSTOFactory contract which will used to collect the funds ).
+            return deployer.deploy(FakeStablecoin, { from: PolymathAccount });
+        })
+        .then(() => {
             // I) Register the USDTieredSTOFactory in the ModuleRegistry to make the factory available at the protocol level.
             // So any securityToken can use that factory to generate the USDTieredSTOFactory contract.
             return moduleRegistry.registerModule(USDTieredSTOFactory.address, { from: PolymathAccount });
@@ -671,6 +676,7 @@ module.exports = function(deployer, network, accounts) {
     VestingEscrowWalletFactory:           ${VestingEscrowWalletFactory.address}
     VestingEscrowWalletLogic:             ${VestingEscrowWalletLogic.address}
     EstateProtocolWhitelistSTO:           ${EstateProtocolWhitelistSTO.address}
+    FakeStablecoin:           ${FakeStablecoin.address}
     ---------------------------------------------------------------------------------
     `);
             console.log("\n");

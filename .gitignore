@@ -50,6 +50,7 @@ contract-hardhat/typechain
 contract-hardhat/typechain-types
 contract-hardhat/generated
 contract-hardhat/build
+contract-hardhat/subgraph/build
 
 # Hardhat files
 contract-hardhat/cache
