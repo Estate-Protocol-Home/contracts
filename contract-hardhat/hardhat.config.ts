@@ -11,6 +11,7 @@ const {
   PROVIDER_URL,
   OWNER_PRIVATE_KEY,
   ETHERSCAN_API_KEY,
+  SOURCIFY_API_URL,
 } = process.env;
 
 const accounts = [...(OWNER_PRIVATE_KEY ? [OWNER_PRIVATE_KEY] : [])];
@@ -33,10 +34,10 @@ const config: HardhatUserConfig = {
       accounts,
       chainId: 5,
     },
-    arbitrumTest: {
+    arbitrumSepolia: {
       url: PROVIDER_URL,
       accounts,
-      chainId: 137,
+      chainId: 421614,
       timeout: 60 * 60 * 1000 // 1 hour
     },
     arbitrumMainnet: {
@@ -44,16 +45,42 @@ const config: HardhatUserConfig = {
       accounts,
       chainId: 42161,
       timeout: 60 * 60 * 1000 // 1 hour
-    }
-  }, 
+    },
+  },
   solidity: {
-    version: '0.5.8',
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200,
+    compilers:[
+    {
+      version: '0.5.8',
+      settings: {
+        optimizer: {
+          enabled: true,
+          runs: 200,
+        },
       },
     },
+    {
+      version: "0.8.20",
+      settings: {
+        optimizer: {
+          enabled: true,
+          runs: 200,
+        },
+      },
+    },
+    {
+      version: "0.8.22",
+      settings: {
+        optimizer: {
+          enabled: true,
+          runs: 200,
+        },
+      },
+    },
+  ],
+  },
+  sourcify: { 
+    enabled: true, 
+    apiUrl: SOURCIFY_API_URL, 
   },
   etherscan: {
     apiKey: ETHERSCAN_API_KEY
