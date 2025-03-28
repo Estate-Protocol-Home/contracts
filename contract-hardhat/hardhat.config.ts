@@ -58,9 +58,9 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: ETHERSCAN_API_KEY
   },
-  paths: {
-    sources: "../contracts",
-  },
+  // paths: {
+  //   sources: "../contracts",
+  // },
 };
 
 export default config;

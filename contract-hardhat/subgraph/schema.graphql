@@ -22,6 +22,117 @@ type ERC20DividendCheckpointFactory @entity {
   from: Bytes!
 }
 
+type GeneralTransferManagerFactory @entity {
+  id: ID!
+  module: Bytes!
+  moduleName: Bytes!
+  moduleFactory: Bytes!
+  creator: Bytes!
+  setupCost: BigInt!
+  setupCostInPoly: BigInt!
+  timestamp: BigInt!
+  from: Bytes!
+}
+
+type SecurityTokenFactory @entity {
+  id: ID!
+  version: String! # string
+  upgrade: BigInt! # uint256
+  logicContract: Bytes! # address
+  initializationData: Bytes! # bytes
+  upgradeData: Bytes! # bytes
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type SecurityToken @entity {
+  id: ID!
+  ticker: String!
+  name: String!
+  securityTokenAddress: Bytes!
+  owner: Bytes!
+  addedAt: BigInt!
+  registrant: Bytes!
+  fromAdmin: Boolean!
+  usdFee: BigInt!
+  polyFee: BigInt!
+  protocolVersion: BigInt!
+  transfers: [Transfer!]! @derivedFrom(field: "token")
+  dividends: [ERC20DividendDeposited!]! @derivedFrom(field: "token")
+  claimedDividends: [ERC20DividendClaimed!]! @derivedFrom(field: "token")
+  userDividends: [UserDividend!]! @derivedFrom(field: "token")
+}
+
+type Transfer @entity {
+  id: ID!
+  token: SecurityToken!
+  from: Account!
+  to: Account!
+  value: BigInt!
+  transactionHash: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+}
+
+type Account @entity {
+  id: ID! # Address of the user
+  tokenBalances: [TokenBalance!]! @derivedFrom(field: "user")
+  claimedDividends: [ERC20DividendClaimed!]! @derivedFrom(field: "payee")
+  checkpointBalances: [CheckpointBalance!]! @derivedFrom(field: "user")
+  userDividends: [UserDividend!]! @derivedFrom(field: "user")
+}
+
+type AccountUser @entity {
+  id: ID! # Address of the user
+  user: [String!]! # Address of the user
+}
+
+type UserDividend @entity {
+  id: ID!
+  user: Account!
+  claim: BigInt! 
+  withheld: BigInt!
+  token: SecurityToken!
+}
+
+type TokenBalance @entity {
+  id: ID! # Unique (userAddress-tokenAddress)
+  user: Account!
+  token: SecurityToken!
+  balance: BigInt! # Current balance of the user for this token
+  checkpointBalances: [CheckpointBalance!]! @derivedFrom(field: "tokenBalance")
+  dividendAmount: BigInt! # Total dividends earned per token
+}
+
+type CheckpointBalance @entity {
+  id: ID!
+  tokenBalance: TokenBalance!
+  user: Account!
+  balance: BigInt! # Balance at the checkpoint
+  currentCheckpoint: BigInt! # Dividend earned at the checkpoint
+  timestamp: BigInt!
+  blockNumber: BigInt!
+}
+
+type Aggregate @entity {
+  id: ID!
+  currentCheckpoint: BigInt!
+  currentDividendId: BigInt!
+}
+
+type ERC20DividendClaimed @entity {
+  id: ID!
+  payee: Account!
+  dividendIndex: BigInt!
+  paymentToken: Bytes!
+  token: SecurityToken!
+  amount: BigInt!
+  withheld: BigInt!
+  contractAddress: Bytes!
+  timestamp: BigInt!
+  transactionHash: Bytes!
+}
 
 type TokenPurchase @entity {
   id: ID!
@@ -42,13 +153,14 @@ type ERC20DividendDeposited @entity {
   checkpointId: BigInt!
   maturity: BigInt!
   expiry: BigInt!
-  token: Bytes!
   amount: BigInt!
   totalSupply: BigInt!
   dividendIndex: BigInt!
   name: Bytes!
   contractAddress: Bytes!
   timestamp: BigInt!
+  paymentToken: Bytes!
+  token: SecurityToken!
 }
 
 type EpnsNotificationCounter @entity {
