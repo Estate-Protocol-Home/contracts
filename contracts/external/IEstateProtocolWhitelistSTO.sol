@@ -45,18 +45,13 @@ interface IEstateProtocolWhitelistSTO {
         );
 
     function getTokenTransferStatus(address token) external view returns (bool);
-
-    function storeVerificationData(
-        bytes32[] calldata _proof,
-        uint64 _expiry,
-        bool _isAccredited
-    ) external;
-
-    event VerificationDataStored(
-        address indexed investor,
+ 
+     function verifyInvestor(
+        bytes32[] calldata proof,
+        address investor,
         uint64 expiry,
         bool isAccredited
-    );
+    ) external  returns (bool);
 
     event TokenLockStartTimeAdded(address token, uint64 startTime);
     event TokenTransferStatus(address token, bool status);
@@ -65,4 +60,9 @@ interface IEstateProtocolWhitelistSTO {
     event OperatorRoleGranted(address indexed account);
     event OperatorRoleRevoked(address indexed account);
     event MerkleRootUpdated(bytes32 root);
+    event InvestorKYCDataUpdate(
+    address indexed investor,
+    uint64 expiryTime,
+    bool isAccredited
+);
 }

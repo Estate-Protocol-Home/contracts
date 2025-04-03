@@ -44,29 +44,6 @@ contract EstateProtocolWhitelistSTO is IEstateProtocolWhitelistSTO {
         emit MerkleRootUpdated(_root);
     }
 
-    /**
-     * @notice UStore proof to be validated against before purchase of tokens
-     * @param _proof proof of the investor
-     *  @param _expiry expiry of the investor proof
-     *  @param _isAccredited is the investor accredited
-     */
-    function storeVerificationData(
-        bytes32[] calldata _proof,
-        uint64 _expiry,
-        bool _isAccredited
-    ) external {
-        require(_proof.length > 0, "Proof cannot be empty");
-        require(_expiry > block.timestamp, "Expiry must be in the future");
-
-        verificationDataMap[msg.sender] = VerificationData({
-            proof: _proof,
-            expiry: _expiry,
-            isAccredited: _isAccredited
-        });
-
-        emit VerificationDataStored(msg.sender, _expiry, _isAccredited);
-    }
-
     function hasVerificationData(address investor) public view returns (bool) {
         return verificationDataMap[investor].expiry > 0;
     }
@@ -128,17 +105,42 @@ contract EstateProtocolWhitelistSTO is IEstateProtocolWhitelistSTO {
      * @return bool Returns true if the proof is valid
      */
     function verifyInvestor(
-        bytes32[] memory proof,
+        bytes32[] calldata proof,
         address investor,
         uint64 expiry,
         bool isAccredited
-    ) internal view returns (bool) {
-        bytes32 leaf = keccak256(
-            abi.encodePacked(investor, expiry, isAccredited)
-        );
-        return MerkleProof.verify(proof, _root, leaf);
+    ) external onlyOperator returns (bool) {
+       
+        bytes32 firstHash = keccak256(abi.encode(investor, expiry, isAccredited));
+        bytes32 leaf = keccak256(abi.encode(firstHash));
+
+        // bytes32 leaf = keccak256(abi.encodePacked(keccak256(abi.encode(investor, expiry, isAccredited))));
+ 
+        require(MerkleProof.verify(proof, _root, leaf), "Invalid proof");
+         
+        bool isAlreadyExistingInvestor = _existingInvestors[investor];
+
+        if (!isAlreadyExistingInvestor) {
+            _existingInvestors[investor] = true;
+        }
+
+
+        _investorKYCData[investor] = InvestorKYCData({
+                expiryTime: expiry,
+                isAccredited: isAccredited
+        });
+
+          emit InvestorKYCDataUpdate({
+                investor: investor,
+                expiryTime: expiry,
+                isAccredited: isAccredited
+            });
+ 
+
+        return true;
     }
 
+ 
     /**
      * @notice Get investor in the whitelist `investor`.
      * @param investor Address of the investor
@@ -157,20 +159,34 @@ contract EstateProtocolWhitelistSTO is IEstateProtocolWhitelistSTO {
             uint8 added
         )
     {
+        bool isAlreadyExistingInvestor = _existingInvestors[investor];
         uint64 futureBlockTimestamp = uint64(block.timestamp + MAX_LOCK_PERIOD);
         uint64 pastBlockTimestamp = uint64(block.timestamp - 1);
 
-        VerificationData memory vData = verificationDataMap[investor];
+        require(_existingInvestors[investor], "Investor not found");
 
-        // Verify the user's Merkle proof
-        bool isVerified = verifyInvestor(
-            vData.proof,
-            investor,
-            vData.expiry,
-            vData.isAccredited
-        );
+        if (isAlreadyExistingInvestor) {
+            uint64 _canSendAfter = pastBlockTimestamp;
 
-        if (!isVerified || block.timestamp > vData.expiry) {
+            InvestorKYCData memory investorKYCData = _investorKYCData[investor];
+            if (investorKYCData.isAccredited) {
+                _canSendAfter = tokenLockStartTime[token] + MAX_LOCK_PERIOD;
+            }
+
+            bool isTransferAllowed = tokenTransferStatus[token];
+            if (!isTransferAllowed) {
+                _canSendAfter += futureBlockTimestamp;
+            }
+
+            uint64 _canReceiveAfter = pastBlockTimestamp;
+
+            return (
+                _canSendAfter,
+                _canReceiveAfter,
+                investorKYCData.expiryTime,
+                uint8(1)
+            );
+        } else {
             return (
                 futureBlockTimestamp,
                 futureBlockTimestamp,
@@ -178,21 +194,6 @@ contract EstateProtocolWhitelistSTO is IEstateProtocolWhitelistSTO {
                 uint8(1)
             );
         }
-
-        uint64 _canSendAfter = pastBlockTimestamp;
-
-        if (vData.isAccredited) {
-            _canSendAfter = tokenLockStartTime[token] + MAX_LOCK_PERIOD;
-        }
-
-        bool isTransferAllowed = tokenTransferStatus[token];
-        if (!isTransferAllowed) {
-            _canSendAfter += futureBlockTimestamp;
-        }
-
-        uint64 _canReceiveAfter = pastBlockTimestamp;
-
-        return (_canSendAfter, _canReceiveAfter, vData.expiry, uint8(1));
     }
 
     function getTokenTransferStatus(
