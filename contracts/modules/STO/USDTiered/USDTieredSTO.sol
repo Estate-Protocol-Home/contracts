@@ -6,6 +6,7 @@ import "../../../interfaces/IOracle.sol";
 import "../../../libraries/DecimalMath.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./USDTieredSTOStorage.sol";
+import "../../../external/IEstateProtocolWhitelistSTO.sol";
 
 /**
  * @title STO module for standard capped crowdsale
@@ -16,6 +17,8 @@ contract USDTieredSTO is USDTieredSTOStorage, STO {
     string internal constant POLY_ORACLE = "PolyUsdOracle";
     string internal constant ETH_ORACLE = "EthUsdOracle";
     bool public premintStatus = false;
+
+    IEstateProtocolWhitelistSTO public whitelistAddress;
 
     ////////////
     // Events //
@@ -52,6 +55,7 @@ contract USDTieredSTO is USDTieredSTOStorage, STO {
     );
     event SetTreasuryWallet(address _oldWallet, address _newWallet);
     event PremintStatusChanged(bool previousPremintStatus);
+    event WhitelistAddressUpdated(address indexed whitelistAddress);
 
 
     ///////////////
@@ -196,6 +200,16 @@ contract USDTieredSTO is USDTieredSTOStorage, STO {
     function modifyAddresses(address payable _wallet, address _treasuryWallet, IERC20[] calldata _usdTokens) external {
         _onlySecurityTokenOwner();
         _modifyAddresses(_wallet, _treasuryWallet, _usdTokens);
+    }
+
+    /**
+    * @notice Sets the whitelist contract address
+    * @param _whitelistAddress Address of the EstateProtocolWhitelistSTO contract
+    */
+    function setWhitelistAddress(address _whitelistAddress) external withPerm(OPERATOR) {
+        require(_whitelistAddress != address(0), "Invalid whitelist address");
+        whitelistAddress = IEstateProtocolWhitelistSTO(_whitelistAddress);
+        emit WhitelistAddressUpdated(_whitelistAddress);
     }
 
     /**
@@ -382,7 +396,18 @@ contract USDTieredSTO is USDTieredSTOStorage, STO {
         return buyWithPOLYRateLimited(_beneficiary, _investedPOLY, 0);
     }
 
-    function buyWithUSD(address _beneficiary, uint256 _investedSC, IERC20 _usdToken) external returns (uint256, uint256, uint256) {
+    function buyWithUSD(address _beneficiary, uint256 _investedSC, IERC20 _usdToken, bytes32[] calldata proof, uint64 expiry, bool isAccredited) external returns (uint256, uint256, uint256) {
+
+         require(
+            IEstateProtocolWhitelistSTO(whitelistAddress).verifyInvestor(
+            proof,
+            _beneficiary,
+            expiry,
+            isAccredited
+        ),
+        "Investor verification failed"
+    );
+
         return buyWithUSDRateLimited(_beneficiary, _investedSC, 0, _usdToken);
     }
 

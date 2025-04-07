@@ -111,11 +111,11 @@ contract EstateProtocolWhitelistSTO is IEstateProtocolWhitelistSTO {
         bool isAccredited
     ) external onlyOperator returns (bool) {
        
+        require(expiry > block.timestamp, "Investor Proof has expired");
+
         bytes32 firstHash = keccak256(abi.encode(investor, expiry, isAccredited));
         bytes32 leaf = keccak256(abi.encode(firstHash));
 
-        // bytes32 leaf = keccak256(abi.encodePacked(keccak256(abi.encode(investor, expiry, isAccredited))));
- 
         require(MerkleProof.verify(proof, _root, leaf), "Invalid proof");
          
         bool isAlreadyExistingInvestor = _existingInvestors[investor];
@@ -162,8 +162,6 @@ contract EstateProtocolWhitelistSTO is IEstateProtocolWhitelistSTO {
         bool isAlreadyExistingInvestor = _existingInvestors[investor];
         uint64 futureBlockTimestamp = uint64(block.timestamp + MAX_LOCK_PERIOD);
         uint64 pastBlockTimestamp = uint64(block.timestamp - 1);
-
-        require(_existingInvestors[investor], "Investor not found");
 
         if (isAlreadyExistingInvestor) {
             uint64 _canSendAfter = pastBlockTimestamp;
