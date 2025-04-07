@@ -84,7 +84,7 @@ contract USDTieredSTO is USDTieredSTOStorage, STO {
     ///////////////////////
 
     constructor(address _securityToken, address _polyAddress) public Module(_securityToken, _polyAddress) {
-
+  
     }
 
     /**
@@ -206,7 +206,7 @@ contract USDTieredSTO is USDTieredSTOStorage, STO {
     * @notice Sets the whitelist contract address
     * @param _whitelistAddress Address of the EstateProtocolWhitelistSTO contract
     */
-    function setWhitelistAddress(address _whitelistAddress) external withPerm(OPERATOR) {
+    function setWhitelistAddress(address _whitelistAddress) external withPerm(ADMIN) {
         require(_whitelistAddress != address(0), "Invalid whitelist address");
         whitelistAddress = IEstateProtocolWhitelistSTO(_whitelistAddress);
         emit WhitelistAddressUpdated(_whitelistAddress);

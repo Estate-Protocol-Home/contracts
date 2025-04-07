@@ -109,7 +109,7 @@ contract EstateProtocolWhitelistSTO is IEstateProtocolWhitelistSTO {
         address investor,
         uint64 expiry,
         bool isAccredited
-    ) external onlyOperator returns (bool) {
+    ) external returns (bool) {
        
         require(expiry > block.timestamp, "Investor Proof has expired");
 
