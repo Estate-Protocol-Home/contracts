@@ -17,8 +17,6 @@ contract EstateProtocolWhitelistSTO is IEstateProtocolWhitelistSTO {
     mapping(address => bool) public isOperator;
     mapping(address => bool) public tokenTransferStatus;
 
-    mapping(address => VerificationData) private verificationDataMap;
-
     constructor() public {
         admin = msg.sender;
         isAdmin[msg.sender] = true;
@@ -44,10 +42,7 @@ contract EstateProtocolWhitelistSTO is IEstateProtocolWhitelistSTO {
         emit MerkleRootUpdated(_root);
     }
 
-    function hasVerificationData(address investor) public view returns (bool) {
-        return verificationDataMap[investor].expiry > 0;
-    }
-
+ 
     function addTokenLockStartTime(
         address token,
         uint64 startTime
