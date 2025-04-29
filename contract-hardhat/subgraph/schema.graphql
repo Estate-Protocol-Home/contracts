@@ -137,6 +137,7 @@ type ERC20DividendClaimed @entity {
 type TokenPurchase @entity {
   id: ID!
   contractAddress: Bytes!
+  securityToken: Bytes!
   purchaser: Bytes!
   beneficiary: Bytes!
   tokens: BigInt!

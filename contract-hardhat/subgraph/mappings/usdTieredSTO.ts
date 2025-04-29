@@ -1,9 +1,11 @@
-import { TokenPurchase as TokenPurchaseSchema } from "../../generated/schema"
+import { TokenPurchase as TokenPurchaseSchema, USDTieredSTOFactory } from "../../generated/schema"
 import { TokenPurchase } from "../../generated/templates/USDTieredSTO/USDTieredSTO"
 
 
 export function handleTokenPurchase(event: TokenPurchase): void {
   const id = event.transaction.hash.toHex();
+  let contract = USDTieredSTOFactory.bind(event.address)
+
 
   let entity = TokenPurchaseSchema.load(id)
 

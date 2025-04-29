@@ -61,6 +61,7 @@
   },
   "homepage": "https://github.com/PolymathNetwork/polymath-core#readme",
   "dependencies": {
+    "@openzeppelin/merkle-tree": "^1.0.8",
     "dotenv": "^8.0.0",
     "openzeppelin-solidity": "2.2.0",
     "solc": "0.5.8",
@@ -73,6 +74,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
+    "@openzeppelin/test-helpers": "^0.5.16",
     "babel-polyfill": "6.26.0",
     "babel-preset-es2015": "6.24.1",
     "babel-preset-stage-2": "6.24.1",

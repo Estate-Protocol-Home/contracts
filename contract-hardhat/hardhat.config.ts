@@ -33,10 +33,10 @@ const config: HardhatUserConfig = {
       accounts,
       chainId: 5,
     },
-    arbitrumTest: {
+    arbitrumSepolia: {
       url: PROVIDER_URL,
       accounts,
-      chainId: 137,
+      chainId: 421614,
       timeout: 60 * 60 * 1000 // 1 hour
     },
     arbitrumMainnet: {

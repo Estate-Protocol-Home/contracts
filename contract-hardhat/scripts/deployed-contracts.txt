@@ -1,0 +1,122 @@
+{
+  PolymathRegistryContractAddress: '0xA22a52b63A14eef0CDFeF4C2E72718B17fFE4c8f'
+}
+{
+  TokenLibContractAddress: '0x75c70686a6cB9D8BB7d71EDbaB09AcafbE439F36'
+}
+{
+  VolumeRestrictionLibContractAddress: '0x0Ba18efA9afD49Ceb53D9BF1258c7eAD6A76B347'
+}
+{
+  ModuleRegistryContractAddress: '0x24d905ffDe199d6fcec5b3E2540382b8988d5Ba0'
+}
+{
+  ModuleRegistryProxyContractAddress: '0x4d6585268eF16c14AeCd2A74bdEaF8B5beFa77B5'
+}
+{
+  GeneralTransferManagerLogicContractAddress: '0x16FB8b9b26b74dfaFf5A9C4a253797B50f4b24D1'
+}
+{
+  GeneralPermissionManagerLogicContractAddress: '0xb382393a856d92FC3b47BCE51CeC69DD21b52877'
+}
+{
+  CountTransferManagerLogicContractAddress: '0xAFAC354914d880a47049BDcF10662e856149356F'
+}
+{
+  ManualApprovalTransferManagerLogicContractAddress: '0x03478D53A30d10B622b08084Cbf9cD5038376Edb'
+}
+{
+  PercentageTransferManagerLogicContractAddress: '0xc4778dfCaEEdFed4A94E6873df07FDa89109135A'
+}
+{
+  ERC20DividendCheckpointLogicContractAddress: '0x5968ad21E06213D3Df7c6bD65bc8DBD4f33F1c1A'
+}
+{
+  EtherDividendCheckpointLogicContractAddress: '0x27993b120e11cD138077462BD148FDd4fFfE79B6'
+}
+{
+  USDTieredSTOLogicContractAddress: '0x68ED41dA466e6248D1bf05af7239B0553c9e9340'
+}
+{
+  volumeRestrictionTMLogicContractAddress: '0xE25a112726F8B1033389f75dB9706F985Bab4795'
+}
+{
+  CappedSTOLogicContractAddress: '0xe96C43370DA2A89Bb457B5e8d7C1c84bCf72967a'
+}
+{
+  VestingEscrowWalletLogicContractAddress: '0x69f67C717EF39c38fbfb4ED866164dc833ffA8eD'
+}
+{
+  DataStoreLogicContractAddress: '0xF16CcD611D776595c0Cb7a718Dc14521ec6C5E0c'
+}
+{
+  SecurityTokenLogicContractAddress: '0xF7D5BD49b2975cFD86dd4D721f74f71f6149259a'
+}
+{
+  DataStoreFactoryContractAddress: '0x1BBB6b6216887A3644E26747e1b26Fe17688e1B2'
+}
+{
+  GeneralTransferManagerFactoryContractAddress: '0xceB06a6E59D76D3722e1AF30f2d6c290831AecF5'
+}
+{
+  GeneralPermissionManagerFactoryContractAddress: '0xEb9c206017e9E880F9EE844742C6e98eF786D0A1'
+}
+{
+  CountTransferManagerFactoryContractAddress: '0xf74cdC2a5ECBaFC19Ba1615eA8C6f5Aa5e8dcB5c'
+}
+{
+  PercentageTransferManagerFactoryContractAddress: '0xE5d03bcc75643c70726dDf6b212eA83Eba767679'
+}
+{
+  EtherDividendCheckpointFactoryContractAddress: '0x63680570081594BD2738814A8730C38550eEC027'
+}
+{
+  ERC20DividendCheckpointFactoryContractAddress: '0xc2423aAa4f9f342456BE4718a17A0DC973F39eEE'
+}
+{
+  VolumeRestrictionTMFactoryContractAddress: '0x6862aDdf4af5f852982D5d2ea2Dc195D2574a13A'
+}
+{
+  ManualApprovalTransferManagerFactoryContractAddress: '0x177e1AC23D2bA8eF983FADDC8C5BAAd01Aa6b3B9'
+}
+{
+  VestingEscrowWalletFactoryContractAddress: '0xAd0dC9ee0877AF2870114aDB3E74756e5fa2aAdE'
+}
+{
+  STGetterContractAddress: '0xA211d507b24A8E0C750D7343Dc5e3E1de2e2f490'
+}
+{
+  STFactoryContractAddress: '0x37Ddf5D84337bc0Fab7e807AC6B44eEe27446610'
+}
+{
+  FeatureRegistryContractAddress: '0xf5a227f596400eA328c1DDed1292F6d14B9Ae674'
+}
+{
+  SecurityTokenRegistryContractAddress: '0xee927774090309B05fB8AC99d8B4aa0c03e22ea0'
+}
+{
+  SecurityTokenRegistryProxyContractAddress: '0x096C0F11E046Cd1dAAB53F2612512cd5cb84F325'
+}
+{
+  STRGetterContractAddress: '0x3eb054cFec074f31b10A4f9Bd43C12ca9fdf39e9'
+}
+{
+  CappedSTOFactoryContractAddress: '0x1cF165a1Ef83D9b168075c2a77a51412e4bEec03'
+}
+{
+  USDTieredSTOFactoryContractAddress: '0xf65ca388AE87040E7f3883C6eB4995A7EdcBe395'
+}
+{
+  PolyTokenFaucetContractAddress: '0xEA6c4E0785BAE641C83Db7739f47D84971b6F036'
+}
+
+{
+  PolyMockOracleContractAddress: '0x61bE7271E5cbc8659bd82aCcF7Dd35baCCD57F0E'
+}
+{
+  StableOracleContractAddress: '0x9ca476a91Eb04206Beab39AdcB63B0282A89A900'
+}
+{
+  ETHOracleContractAddress: '0x77E8c402c91779b818382e36a1122E11061538e7'
+}
+FakeUSDT: 0x19407Cc0073620f0ed51012B6f8BE8F279e24bca
