@@ -44,9 +44,9 @@ const EstateProtocolWhitelistSTO = artifacts.require('./EstateProtocolWhitelistS
 const Web3 = require("web3");
 let BN = Web3.utils.BN;
 const nullAddress = "0x0000000000000000000000000000000000000000";
-const cappedSTOSetupCost = new BN(20000).mul(new BN(10).pow(new BN(18))); // 20K POLY fee
-const usdTieredSTOSetupCost = new BN(100000).mul(new BN(10).pow(new BN(18))); // 100K POLY fee
-const initRegFee = new BN(250).mul(new BN(10).pow(new BN(18))); // 250 POLY fee for registering ticker or security token in registry
+const cappedSTOSetupCost = new BN(0); // 0 POLY fee
+const usdTieredSTOSetupCost = new BN(0); // 0 POLY fee
+const initRegFee = new BN(0); // 0 POLY fee for registering ticker or security token in registry
 let PolyToken;
 let UsdToken;
 let ETHOracle;
@@ -59,58 +59,61 @@ module.exports = function(deployer, network, accounts) {
     let moduleRegistry;
     let polymathRegistry;
     let web3;
+    
+    // Single promise chain for all network setup
+    let setupPromise = Promise.resolve();
+    
     if (network === "development") {
         web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
         PolymathAccount = accounts[0];
-        PolyToken = DevPolyToken.address; // Development network polytoken address
-        deployer.deploy(DevPolyToken, { from: PolymathAccount }).then(() => {
-            DevPolyToken.deployed().then(mockedUSDToken => {
+        setupPromise = setupPromise
+            .then(async () => {
+                const mockedUSDToken = await DevPolyToken.deployed().catch(() => {
+                    throw new Error("PolyTokenFaucet not deployed. Run 1_deploy_token.js first.");
+                });
+                PolyToken = mockedUSDToken.address; // Development network polytoken address
                 UsdToken = mockedUSDToken.address;
-            });
-        })
-        .then(() => {
-            return deployer.deploy(EstateProtocolWhitelistSTO, { from: PolymathAccount })
-        }).then(() => {
-            return EstateProtocolWhitelistSTO.deployed();
-        });
-        deployer
-            .deploy(
-                MockOracle,
-                PolyToken,
-                web3.utils.fromAscii("POLY"),
-                web3.utils.fromAscii("USD"),
-                new BN(5).mul(new BN(10).pow(new BN(17))),
-                { from: PolymathAccount }
-            ).then(() => {
-                return MockOracle.deployed();
-            }).then(mockedOracle => {
+            })
+            .then(() => deployer.deploy(EstateProtocolWhitelistSTO, { from: PolymathAccount }))
+            .then(() => EstateProtocolWhitelistSTO.deployed())
+            .then(() => {
+                if (!PolyToken) {
+                    throw new Error("PolyToken not initialized before MockOracle deployment");
+                }
+                return deployer.deploy(
+                    MockOracle,
+                    PolyToken,
+                    web3.utils.fromAscii("POLY"),
+                    web3.utils.fromAscii("USD"),
+                    new BN(5).mul(new BN(10).pow(new BN(17))),
+                    { from: PolymathAccount }
+                );
+            })
+            .then(() => MockOracle.deployed())
+            .then(mockedOracle => {
                 POLYOracle = mockedOracle.address;
-            }).then(() => {
-                return deployer
-                    .deploy(
-                        StableOracle,
-                        POLYOracle,
-                        new BN(10).mul(new BN(10).pow(new BN(16))),
-                        { from: PolymathAccount }
-                    );
-            }).then(() => {
-                return StableOracle.deployed();
-            }).then(stableOracle => {
-                    StablePOLYOracle = stableOracle.address;
-            });
-        deployer
-            .deploy(
+            })
+            .then(() => deployer.deploy(
+                StableOracle,
+                POLYOracle,
+                new BN(10).mul(new BN(10).pow(new BN(16))),
+                { from: PolymathAccount }
+            ))
+            .then(() => StableOracle.deployed())
+            .then(stableOracle => {
+                StablePOLYOracle = stableOracle.address;
+            })
+            .then(() => deployer.deploy(
                 MockOracle,
                 nullAddress,
                 web3.utils.fromAscii("ETH"),
                 web3.utils.fromAscii("USD"),
                 new BN(500).mul(new BN(10).pow(new BN(18))),
                 { from: PolymathAccount }
-            )
-            .then(() => {
-                MockOracle.deployed().then(mockedOracle => {
-                    ETHOracle = mockedOracle.address;
-                });
+            ))
+            .then(() => MockOracle.deployed())
+            .then(mockedOracle => {
+                ETHOracle = mockedOracle.address;
             });
     } else if (network === "kovan") {
         web3 = new Web3(new Web3.providers.HttpProvider("https://kovan.infura.io/g5xfoQ0jFSE9S5LwM1Ei"));
@@ -122,40 +125,56 @@ module.exports = function(deployer, network, accounts) {
     } else if (network === "arbitrumSepolia") {
         web3 = new Web3(new Web3.providers.HttpProvider("https://sepolia-rollup.arbitrum.io/rpc/"));
         PolymathAccount = accounts[0];
-        PolyToken = DevPolyToken.address; // Development network polytoken address
         console.log(DevPolyToken);
-        deployer.deploy(DevPolyToken, { from: PolymathAccount }).then(() => {
-            DevPolyToken.deployed().then(mockedUSDToken => {
+        setupPromise = setupPromise
+            .then(async () => {
+                const mockedUSDToken = await DevPolyToken.deployed().catch(() => {
+                    throw new Error("PolyTokenFaucet not deployed. Run 1_deploy_token.js first.");
+                });
+                PolyToken = mockedUSDToken.address; // Development network polytoken address
                 UsdToken = mockedUSDToken.address;
-            });
-        });
-        deployer
-            .deploy(MockOracle, PolyToken, web3.utils.fromAscii("POLY"), web3.utils.fromAscii("USD"), new BN(5).mul(new BN(10).pow(new BN(17))), { from: PolymathAccount }
-            ).then(() => {
-                return MockOracle.deployed();
-            }).then(mockedOracle => {
+            })
+            .then(() => deployer.deploy(EstateProtocolWhitelistSTO, { from: PolymathAccount }))
+            .then(() => EstateProtocolWhitelistSTO.deployed())
+            .then(() => {
+                if (!PolyToken) {
+                    throw new Error("PolyToken not initialized before MockOracle deployment");
+                }
+                return deployer.deploy(
+                    MockOracle,
+                    PolyToken,
+                    web3.utils.fromAscii("POLY"),
+                    web3.utils.fromAscii("USD"),
+                    new BN(5).mul(new BN(10).pow(new BN(17))),
+                    { from: PolymathAccount }
+                );
+            })
+            .then(() => MockOracle.deployed())
+            .then(mockedOracle => {
                 POLYOracle = mockedOracle.address;
-            }).then(() => {
-                return deployer.deploy(StableOracle, POLYOracle, new BN(10).mul(new BN(10).pow(new BN(16))), { from: PolymathAccount });
-            }).then(() => {
-                return StableOracle.deployed();
-            }).then(stableOracle => {
+            })
+            .then(() => deployer.deploy(
+                StableOracle,
+                POLYOracle,
+                new BN(10).mul(new BN(10).pow(new BN(16))),
+                { from: PolymathAccount }
+            ))
+            .then(() => StableOracle.deployed())
+            .then(stableOracle => {
                 StablePOLYOracle = stableOracle.address;
             })
-            .then(() => {
-                return deployer.deploy(EstateProtocolWhitelistSTO, { from: PolymathAccount })
-            }).then(() => {
-                return EstateProtocolWhitelistSTO.deployed();
-            });
-
-        deployer
-            .deploy(MockOracle, nullAddress, web3.utils.fromAscii("ETH"), web3.utils.fromAscii("USD"), new BN(500).mul(new BN(10).pow(new BN(18))), 
+            .then(() => deployer.deploy(
+                MockOracle,
+                nullAddress,
+                web3.utils.fromAscii("ETH"),
+                web3.utils.fromAscii("USD"),
+                new BN(500).mul(new BN(10).pow(new BN(18))),
                 { from: PolymathAccount }
-            ).then(() => {
-                MockOracle.deployed().then(mockedOracle => {
-                    ETHOracle = mockedOracle.address;
-                });
-            })
+            ))
+            .then(() => MockOracle.deployed())
+            .then(mockedOracle => {
+                ETHOracle = mockedOracle.address;
+            });
     } else if (network === "arbitrumMainnet") {
         web3 = new Web3(new Web3.providers.HttpProvider("https://arbitrum-mainnet.infura.io/v3/22457d45ad4247e08bc6ab52316184c5"));
         PolymathAccount = accounts[0];
@@ -174,31 +193,47 @@ module.exports = function(deployer, network, accounts) {
     if (network === "coverage") {
         web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
         PolymathAccount = accounts[0];
-        PolyToken = DevPolyToken.address; // Development network polytoken address
-        deployer
-            .deploy(MockOracle, PolyToken, web3.utils.fromAscii("POLY"), web3.utils.fromAscii("USD"), new BN(0.5).mul(new BN(10).pow(new BN(18))), { from: PolymathAccount })
-            .then(() => {
-                return MockOracle.deployed();
-            }).then(mockedOracle => {
+        setupPromise = setupPromise
+            .then(async () => {
+                const mockedUSDToken = await DevPolyToken.deployed().catch(() => {
+                    throw new Error("PolyTokenFaucet not deployed. Run 1_deploy_token.js first.");
+                });
+                PolyToken = mockedUSDToken.address; // Development network polytoken address
+            })
+            .then(() => deployer.deploy(
+                MockOracle,
+                PolyToken,
+                web3.utils.fromAscii("POLY"),
+                web3.utils.fromAscii("USD"),
+                new BN(0.5).mul(new BN(10).pow(new BN(18))),
+                { from: PolymathAccount }
+            ))
+            .then(() => MockOracle.deployed())
+            .then(mockedOracle => {
                 POLYOracle = mockedOracle.address;
-            }).then(() => {
-                return deployer
-                    .deploy(
-                        StableOracle,
-                        POLYOracle,
-                        new BN(10).mul(new BN(10).pow(new BN(16))),
-                        { from: PolymathAccount }
-                    )
-            }).then(() => {
-                return StableOracle.deployed();
-            }).then(stableOracle => {
+            })
+            .then(() => deployer.deploy(
+                StableOracle,
+                POLYOracle,
+                new BN(10).mul(new BN(10).pow(new BN(16))),
+                { from: PolymathAccount }
+            ))
+            .then(() => StableOracle.deployed())
+            .then(stableOracle => {
                 StablePOLYOracle = stableOracle.address;
-            });
-        deployer.deploy(MockOracle, nullAddress, web3.utils.fromAscii("ETH"), web3.utils.fromAscii("USD"), new BN(500).mul(new BN(10).pow(new BN(18))), { from: PolymathAccount }).then(() => {
-            MockOracle.deployed().then(mockedOracle => {
+            })
+            .then(() => deployer.deploy(
+                MockOracle,
+                nullAddress,
+                web3.utils.fromAscii("ETH"),
+                web3.utils.fromAscii("USD"),
+                new BN(500).mul(new BN(10).pow(new BN(18))),
+                { from: PolymathAccount }
+            ))
+            .then(() => MockOracle.deployed())
+            .then(mockedOracle => {
                 ETHOracle = mockedOracle.address;
             });
-        });
     }
 
     const tokenInitBytes = {
@@ -256,8 +291,10 @@ module.exports = function(deployer, network, accounts) {
 
     // POLYMATH NETWORK Configuration :: DO THIS ONLY ONCE
     // A) Deploy the PolymathRegistry contract
-    return deployer
-        .deploy(PolymathRegistry, { from: PolymathAccount })
+    return setupPromise
+        .then(() => {
+            return deployer.deploy(PolymathRegistry, { from: PolymathAccount });
+        })
         .then(() => {
             return PolymathRegistry.deployed();
         })
