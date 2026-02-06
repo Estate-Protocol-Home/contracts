@@ -4,7 +4,13 @@ require('dotenv').config();
 const fs = require('fs');
 const NonceTrackerSubprovider = require("web3-provider-engine/subproviders/nonce-tracker")
 
-const HDWalletProvider = require("truffle-hdwallet-provider");
+const HDWalletProvider = require("@truffle/hdwallet-provider");
+
+// Truffle re-invokes the provider factory for every operation when it is
+// a function, so wallet + throttle state must live at module scope.
+let _arbitrumSepoliaWallet = null;
+const RATE_LIMIT_MS = 1000;
+let nextAvailableAt = 0;
 
 let ver;
 if (process.env.POLYMATH_NATIVE_SOLC) {
@@ -64,16 +70,51 @@ module.exports = {
       //   return new Web3.providers.HttpProvider('https://goerli-rollup.arbitrum.io/rpc', { privateKeys: [key] });
       // },
       provider: () => {
-        const key = "";
-        let wallet = new HDWalletProvider(key, "https://sepolia-rollup.arbitrum.io/rpc/")
+        // Return cached instance — Truffle re-calls this factory per
+        // operation, so we must not recreate the wallet each time.
+        if (_arbitrumSepoliaWallet) return _arbitrumSepoliaWallet;
+
+        let key = process.env.PRIVATE_KEY;
+
+        if (!key) {
+          throw new Error('PRIVATE_KEY not set in .env file or privKey file not found');
+        }
+
+        key = key.trim()
+              .replace('0x', '')
+              .replace(/['"]/g, '');
+
+        const rpcUrl = process.env.ARBITRUM_SEPOLIA_RPC_URL || "https://sepolia-rollup.arbitrum.io/rpc/";
+
+        let wallet = new HDWalletProvider(key, rpcUrl)
         var nonceTracker = new NonceTrackerSubprovider()
         wallet.engine._providers.unshift(nonceTracker)
         nonceTracker.setEngine(wallet.engine)
+
+        // Uncomment this block to throttle transactions if you encounter rate limiting while full deployment.  Adjust RATE_LIMIT_MS as needed.
+
+        // Throttle at engine.sendAsync — the single funnel point that
+        // both wallet.send() and wallet.sendAsync() delegate to after
+        // initialization.  Uses module-scope nextAvailableAt so state
+        // survives across calls even if caching is bypassed.
+        // const originalEngineSendAsync = wallet.engine.sendAsync.bind(wallet.engine);
+        // wallet.engine.sendAsync = function(payload, callback) {
+        //   const now = Date.now();
+        //   const waitTime = Math.max(0, nextAvailableAt - now);
+        //   nextAvailableAt = Math.max(now, nextAvailableAt) + RATE_LIMIT_MS;
+        //   if (waitTime > 0) {
+        //     setTimeout(() => originalEngineSendAsync(payload, callback), waitTime);
+        //   } else {
+        //     originalEngineSendAsync(payload, callback);
+        //   }
+        // };
+
+        _arbitrumSepoliaWallet = wallet;
         return wallet
       },
       network_id: '421614', // Match any network id
       gas: 7900000,
-      gasPrice: 5000000000
+      gasPrice: 100000000
     },
     arbitrumMainnet: {
       provider: () => {
