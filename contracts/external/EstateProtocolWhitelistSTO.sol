@@ -103,6 +103,17 @@ contract EstateProtocolWhitelistSTO is IEstateProtocolWhitelistSTO {
   }
 
   /**
+    * @notice Returns true only if investor exists and KYC has not expired.
+    */
+  function isInvestorKYCValid(address investor) external view returns (bool) {
+    if (!_existingInvestors[investor]) {
+      return false;
+    }
+    InvestorKYCData memory investorKYCData = _investorKYCData[investor];
+    return investorKYCData.expiryTime >= uint64(block.timestamp);
+  }
+
+  /**
     * @notice Get investor in the whitelist `investor`.
     */
   function getInvestorKYCData(address investor, address token) external view returns (

@@ -5,6 +5,7 @@ const fs = require('fs');
 const NonceTrackerSubprovider = require("web3-provider-engine/subproviders/nonce-tracker")
 
 const HDWalletProvider = require("@truffle/hdwallet-provider");
+const plugin = require('eslint-plugin-import');
 
 // Truffle re-invokes the provider factory for every operation when it is
 // a function, so wallet + throttle state must live at module scope.
@@ -147,6 +148,12 @@ module.exports = {
         }
       }
     }
+  },
+  plugins: [
+    'truffle-plugin-verify'
+  ],
+  api_keys: {
+    arbicscan: process.env.ARBISCAN_API_KEY
   },
   mocha: {
     enableTimeouts: false

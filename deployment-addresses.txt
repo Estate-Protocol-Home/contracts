@@ -1,0 +1,38 @@
+    ----------------------- Polymath Network Smart Contracts: -----------------------
+    PolymathRegistry:                     0x76468e7daC8cC8Eb18E2ba8CA5aD503cC41E6E9f
+    SecurityTokenRegistry (Proxy):        0x173C47b187704A7FC67076e0fEa28f3125B410Bd
+    ModuleRegistry (Proxy):               0x98a0c03BDE39bb9459420E5ad478CD9b770B0153
+    FeatureRegistry:                      0x278E01c72D0319e1bADd5031f0861458b3219fc3
+    STRGetter:                            0xb469356332C06b310797ba1bfCAFC0Bd3277E03F
+
+    ETHOracle:                            0xfa4e726BC4438336f38c6ea4BE1324a1AD4fDf68
+    POLYOracle:                           0xaf8011e468C32657538550C190e861DA71d51BAF
+    POLYStableOracle:                     0x93a0667669333AB5Ac6a2A84336fe5241a230494
+
+    STFactory:                            0x305668144E9AFe288E7B3C09D8BfF14cCa6a084B
+    GeneralTransferManagerLogic:          0x5f793f329DF736ca4B7589A61c8d3E8a439473F6
+    GeneralTransferManagerFactory:        0xf78513a241831F5d9f0b75BC06E105F84AF021fe
+    GeneralPermissionManagerLogic:        0xf40efd830B0F38Ee6E92a7FBEc8670149DC895b6
+    GeneralPermissionManagerFactory:      0xDcF4a84C8d4CFcd7107218068Ae70fc7b8396E5D
+
+    CappedSTOLogic:                       0x3A767d60af1178c0A6F4517BD64e5f3b308485Da
+    CappedSTOFactory:                     0xaC2035F3AC234c3E7639A27b615bA9894fF64b1B
+    USDTieredSTOLogic:                    0x623A9d3E0A4CA5aD486E9845EBfBdD4eDdaE06B0
+    USDTieredSTOFactory:                  0xe9B8b228A2EF76059cA4F9dA0B3a067642d3Dab4
+
+    CountTransferManagerLogic:            0x860F69D88228Ca8322CA3927943f98E6B3880AA2
+    CountTransferManagerFactory:          0x707FE6Bad7A66537D0dF47056317b6f0499380F3
+    PercentageTransferManagerLogic:       0x704eE7CE9769EC43CE91Ef16675Fa17606b693B6
+    PercentageTransferManagerFactory:     0x26832ad66ceCecB44206a69ca1128F7772D852F3
+    ManualApprovalTransferManagerLogic:   0xf8eEfcbFCb1a51f78eCeE8205770aeDDB47b372b
+    ManualApprovalTransferManagerFactory: 0x5B1AEDc2C67ba11D4C4cA22aEd79a70737249B63
+    EtherDividendCheckpointLogic:         0xbDF4975a73475FFE2A0e2fFeE794d92350c38Ec0
+    ERC20DividendCheckpointLogic:         0x57E03a8477218ee962Bf638D6444e45862eED9CF
+    EtherDividendCheckpointFactory:       0x20fA699295B60642fF1D2592B93BD9876365f2ff
+    ERC20DividendCheckpointFactory:       0x07E4A85A14B4C717262577Cd03A3313059aCCd8A
+    VolumeRestrictionTMFactory:           0x90f89920D2F68a83C61eF216214e93Cee9D30EDB
+    VolumeRestrictionTMLogic:             0xAbB62C77507f246e02104A2FA5937B4d68F6F5F8
+    VestingEscrowWalletFactory:           0x1F5B8ddFcb8eAD8424319aFf1Ab59EF06ff33CE9
+    VestingEscrowWalletLogic:             0x49a9d92CA90f59A8a20dCC6e7A14D458e3E15ed6
+    EstateProtocolWhitelistSTO:           0x145c7B0889bC47fE281EeeC8c237787ff071f299
+    ---------------------------------------------------------------------------------

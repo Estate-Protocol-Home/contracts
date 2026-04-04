@@ -22,7 +22,8 @@
     "graph:deploy:local": "graph deploy local/local --ipfs http://localhost:5001 --node http://127.0.0.1:8020 --version-label 0.0.1 ./subgraph/subgraph.yaml",
     "graph:all:local": "npm run graph:codegen && npm run graph:build && npm run graph:create:local && npm run graph:deploy:local",
     "graph:deploy:arbitrumSepolia": "npm run graph:build && graph deploy petermunachi/ep-arbitrum-sepolia --node https://api.thegraph.com/deploy/  ./subgraph/subgraph.yaml",
-    "graph:deploy:arbitrumOne": "npm run graph:build && graph deploy petermunachi/ep-arbitrum-one --node https://api.thegraph.com/deploy/  ./subgraph/subgraph.yaml"
+    "graph:deploy:arbitrumOne": "npm run graph:build && graph deploy petermunachi/ep-arbitrum-one --node https://api.thegraph.com/deploy/  ./subgraph/subgraph.yaml",
+    "goldsky:deploy:arbitrumSepolia": "npm run graph:codegen && npm run graph:build && goldsky subgraph deploy ep-arbitrum-sepolia/1.0.0 --path ./build"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.69.1",

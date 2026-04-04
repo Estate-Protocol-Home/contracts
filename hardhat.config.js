@@ -47,6 +47,16 @@ const config = {
   etherscan: {
     apiKey: ETHERSCAN_API_KEY
   },
+  customChains: [
+      {
+        network: "arbitrum-one",
+        chainId: 42161,
+        urls: {
+          apiURL: "https://arbitrum.blockscout.com/api",
+          browserURL: "https://arbitrum.blockscout.com"
+        }
+      }
+    ]
 };
 
 module.exports = config;
